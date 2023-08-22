@@ -6,7 +6,8 @@ interface PlayerProps extends Omit<PlayerType, 'id'> {
     frontCard: boolean
 }
 
-const backImage = 'https://deckofcardsapi.com/static/img/back.png';
+// const backImage = 'https://deckofcardsapi.com/static/img/back.png';
+const backImage = '/assets/images/back.png';
 
 export default function Player({ index, name, coins, point, cards, frontCard, lose }: PlayerProps) {
     return (
@@ -14,7 +15,10 @@ export default function Player({ index, name, coins, point, cards, frontCard, lo
             <div className={`player player${index}`}>
                 <div className='container'>
                     {
-                        lose && <span className='txt-lose'>LOSE</span>
+                        lose &&
+                        <div>
+                            <span className='txt-lose'>NOT ENOUGH COINS</span>
+                        </div>
                     }
                     <div className={`cards ${lose ? 'cards-lose' : ''}`}>
                         {
