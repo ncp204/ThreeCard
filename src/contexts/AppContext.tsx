@@ -143,15 +143,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const winnerNameArr: string[] = []
         const finalPlayers = updatedPlayers.map((player) => {
             const coins = player.coins;
-            const lose = coins <= LOSS_COINS;
             const winner = winnersId.includes(player.id);
             if (winner) {
                 winnerNameArr.push(player.name);
             }
-            return { ...player, coins: lose ? coins : winner ? coins : coins - LOSS_COINS, lose };
+            const finalCoins = winner ? coins : coins - LOSS_COINS;
+            const notEnoughCoin = finalCoins < LOSS_COINS;
+            return { ...player, coins: finalCoins, lose: notEnoughCoin };
         });
 
-        setState((prev) => ({ ...prev, frontCard: !state.frontCard, players: finalPlayers }));
+        setState((prev) => ({ ...prev, frontCard: true, players: finalPlayers }));
         const winnerName: string = winnerNameArr.length > 0 ? winnerNameArr.join(', ') : '';
         toast.success('Winner: ' + winnerName)
     };
