@@ -1,4 +1,3 @@
-import { shuffleCard } from "apis/cardApi";
 import { useGameContext } from "../../contexts/AppContext";
 import Player from "../Player";
 import './Table.scss'
@@ -9,7 +8,7 @@ export default function Table() {
         ...gameContext
     }
 
-    const { players, deckId, frontCard, remaining, shuffleCards, drawCards, revealResult, resetGame } = contextData;
+    const { players, frontCard, remaining, shuffleCards, drawCards, revealResult, resetGame } = contextData;
 
     return (
         <div className="wrapper">
