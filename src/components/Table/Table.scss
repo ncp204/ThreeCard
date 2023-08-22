@@ -1,0 +1,79 @@
+.wrapper {
+    margin         : 0;
+    padding        : 0;
+    width          : 100vw;
+    height         : 100vh;
+    display        : flex;
+    justify-content: center;
+    align-items    : center;
+
+    .table {
+        width           : 1200px;
+        height          : 600px;
+        background-image: linear-gradient(to bottom right, #004225, #003019);
+        border-radius   : 20px;
+        position        : relative;
+
+        .center-container {
+            width          : 100%;
+            height         : 100%;
+            display        : flex;
+            justify-content: center;
+            align-items    : center;
+            flex-direction : column;
+
+            .container {
+                width: 240px;
+
+                .button {
+                    border-radius: 20px;
+                    border       : solid 2px white;
+                    margin-bottom: 7px;
+                    padding      : 7px;
+                    color        : white;
+                    cursor       : pointer;
+                    width        : 78px;
+                }
+
+                .btn-row-1 {
+                    display: flex;
+
+                    .btn-deck-cards {
+                        width           : 100%;
+                        text-align      : center;
+                        background-color: #663399;
+                        cursor          : auto;
+                    }
+                }
+
+                .btn-row-2 {
+                    width          : 100%;
+                    display        : flex;
+                    justify-content: space-between;
+
+                    .btn-shuffle {
+                        background-color: #008000;
+                    }
+
+                    .btn-draw {
+                        background-color: #ffbf18;
+                    }
+
+                    .btn-reveal {
+                        background-color: #272727;
+                    }
+                }
+
+                .btn-row-3 {
+                    width          : 100%;
+                    display        : flex;
+                    justify-content: center;
+
+                    .btn-reset {
+                        background-color: brown;
+                    }
+                }
+            }
+        }
+    }
+}

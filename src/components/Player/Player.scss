@@ -1,0 +1,105 @@
+.player {
+    position        : absolute;
+    width           : 175px;
+    height          : 175px;
+    background-color: #deb887;
+    border          : solid 2px white;
+    padding         : 10px;
+
+    &.player1 {
+        right    : 3px;
+        top      : 50%;
+        transform: translateY(-50%);
+    }
+
+    &.player2 {
+        top      : 3px;
+        left     : 50%;
+        transform: translateX(-50%);
+    }
+
+    &.player3 {
+        left     : 3px;
+        top      : 50%;
+        transform: translateY(-50%);
+    }
+
+    &.player4 {
+        bottom   : 0;
+        left     : 50%;
+        transform: translateX(-50%);
+    }
+
+    .container {
+        width   : 100%;
+        height  : 100%;
+        position: relative;
+
+        .txt-lose {
+            position   : absolute;
+            z-index    : 100;
+            font-weight: bold;
+            color      : #ffffff;
+            font-size  : 30px;
+            top        : 10px;
+            transform  : translateX(50%);
+        }
+
+        .cards-lose {
+            filter: brightness(0.5);
+        }
+
+        .cards {
+            width        : 100%;
+            height       : 50%;
+            margin-bottom: 5px;
+            position     : relative;
+
+            .card {
+                position  : absolute;
+                width     : 33%;
+                height    : 100%;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .card:nth-child(1) {
+                z-index  : 1;
+                transform: translateX(10px) translateY(5px);
+            }
+
+            .card:nth-child(2) {
+                z-index  : 2;
+                transform: translateX(50px);
+            }
+
+            .card:nth-child(3) {
+                z-index  : 3;
+                transform: translateX(90px) translateY(5px);
+            }
+
+            .lose {
+                width          : 100%;
+                height         : 100%;
+                display        : flex;
+                justify-content: center;
+                align-items    : center;
+                font-size      : 30px;
+                font-weight    : 700;
+                color          : #ffffff;
+
+                span {
+                    z-index: 100;
+                }
+            }
+        }
+
+        .player-infor {
+            display       : flex;
+            flex-direction: column;
+
+            span {
+                padding-bottom: 3px;
+            }
+        }
+    }
+}
