@@ -70,7 +70,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     const shuffleCards = async () => {
         try {
-            if (state.shuffled && checkAvailabelCards(state.players, state.remaining)) {
+            if (state.shuffled && checkAvailabelCardsAndPlayer(state.players, state.remaining)) {
                 toast.info('There are still enough cards to play the game')
                 return;
             }
@@ -95,13 +95,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const drawCards = async () => {
         try {
             if (hasOnePlayer()) {
-                toast.warning('Insufficient number of players')
+                toast.warning('Insufficient number of players, please click Reset button to reset the game')
                 return;
             }
 
             const { players, deckId, remaining } = state;
 
-            if (checkAvailabelCards(players, remaining)) {
+            if (checkAvailabelCardsAndPlayer(players, remaining)) {
                 if (!state.frontCard && state.players[0].cards.length === 3) {
                     toast.warning('Please click Reveal button')
                     return;
@@ -147,7 +147,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             if (winner) {
                 winnerNameArr.push(player.name);
             }
-            const finalCoins = winner ? coins : coins - LOSS_COINS;
+            const finalCoins = winner ? coins : coins >= LOSS_COINS ? coins - LOSS_COINS : coins;
             const notEnoughCoin = finalCoins < LOSS_COINS;
             return { ...player, coins: finalCoins, lose: notEnoughCoin };
         });
@@ -207,9 +207,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         return false;
     }
 
-    const checkAvailabelCards = (players: Player[], remaining: number): boolean => {
+    const checkAvailabelCardsAndPlayer = (players: Player[], remaining: number): boolean => {
         const remainingPlayer = players.filter(player => player.coins >= LOSS_COINS).length;
-        const result: boolean = remaining >= remainingPlayer * 3;
+        const result: boolean = remaining >= remainingPlayer * 3 && remainingPlayer >= 2;
         return result;
     }
 
