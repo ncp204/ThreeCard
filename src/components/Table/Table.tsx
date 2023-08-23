@@ -8,23 +8,19 @@ export default function Table() {
         ...gameContext
     }
 
-    const { players, frontCard, remaining, shuffleCards, drawCards, revealResult, resetGame } = contextData;
+    const { players, frontCard, remaining, isDrawCards, shuffleCards, drawCards, revealResult, resetGame } = contextData;
 
     return (
         <div className="wrapper">
             <div className="table">
                 {
-                    players?.map((player, index) => {
+                    players?.map((playerInfor, index) => {
                         return (
                             <Player
-                                key={player.id}
+                                key={playerInfor.id}
                                 index={index + 1}
                                 frontCard={frontCard || false}
-                                name={player.name}
-                                coins={player.coins}
-                                point={player.point}
-                                cards={player.cards}
-                                lose={player.lose}
+                                player={playerInfor}
                             />
                         )
                     })
@@ -36,13 +32,16 @@ export default function Table() {
                             <div className="button btn-deck-cards">Deck Cards: {remaining}</div>
                         </div>
                         <div className="btn-row-2">
-                            <button className="button btn-shuffle" onClick={shuffleCards}>Shuffle</button>
-                            <button className="button btn-draw" onClick={drawCards}>Draw</button>
-                            <button className="button btn-reveal" onClick={revealResult}>Reveal</button>
+                            <button disabled={isDrawCards} className={`button btn-shuffle ${isDrawCards ? 'disabled' : ''}`} onClick={shuffleCards}>Shuffle</button>
+                            <button disabled={isDrawCards} className={`button btn-draw ${isDrawCards ? 'disabled' : ''}`} onClick={drawCards}>Draw</button>
+                            <button disabled={isDrawCards} className={`button btn-reveal ${isDrawCards ? 'disabled' : ''}`} onClick={revealResult}>Reveal</button>
                         </div>
                         <div className="btn-row-3">
-                            <button className="button btn-reset" onClick={resetGame}>Reset</button>
+                            <button disabled={isDrawCards} className={`button btn-reset ${isDrawCards ? 'disabled' : ''}`} onClick={resetGame}>Reset</button>
                         </div>
+                        {
+                            isDrawCards && <div className="txt-isDrawing"><span>Is drawing...</span></div>
+                        }
                     </div>
                 </div>
             </div>

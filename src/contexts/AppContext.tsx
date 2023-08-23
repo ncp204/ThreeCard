@@ -30,6 +30,7 @@ export interface GameContextInterface {
     remaining: number;
     shuffled: boolean;
     frontCard: boolean;
+    isDrawCards: boolean;
     shuffleCards: () => void;
     drawCards: () => void;
     revealResult: () => void;
@@ -51,16 +52,17 @@ type stateType = GameContextValues & {
 
 const initialState: stateType = {
     players: [
-        { id: 0, name: 'UserA', coins: 5000, point: 0, cards: [], lose: false },
-        { id: 1, name: 'UserB', coins: 5000, point: 0, cards: [], lose: false },
-        { id: 2, name: 'UserC', coins: 5000, point: 0, cards: [], lose: false },
-        { id: 3, name: 'UserD', coins: 5000, point: 0, cards: [], lose: false },
+        { id: 0, name: 'User A', coins: 5000, point: 0, cards: [], lose: false },
+        { id: 1, name: 'User B', coins: 5000, point: 0, cards: [], lose: false },
+        { id: 2, name: 'User C', coins: 5000, point: 0, cards: [], lose: false },
+        { id: 3, name: 'User D', coins: 5000, point: 0, cards: [], lose: false },
     ],
     deckId: '',
     remaining: 0,
     shuffled: false,
     success: false,
     frontCard: false,
+    isDrawCards: false,
 }
 
 const LOSS_COINS = 900;
@@ -106,19 +108,44 @@ export function GameProvider({ children }: { children: ReactNode }) {
                     toast.warning('Please click Reveal button')
                     return;
                 }
-                resetCardsAndPointPlayer(players)
 
-                for (const i in players) {
-                    let index = Number(i);
-                    if (!players[index].lose) {
-                        const res = await drawACard(deckId, 3);
-                        const { cards, remaining, success } = res.data;
-                        setState(prevState => {
-                            const updatedPlayers = [...prevState.players];
-                            updatedPlayers[index] = { ...updatedPlayers[index], cards };
-                            return { ...prevState, players: updatedPlayers, remaining, success };
-                        });
+                const playersReset: Player[] = players.map(player => {
+                    return { ...player, cards: [], point: 0 }
+                })
+                setState(prev => ({ ...prev, players: playersReset, frontCard: false }));
+
+                const playersCanPlay: ({ index: number, player: Player } | null)[] = playersReset.map((player, index) => {
+                    if (!player.lose) {
+                        return {
+                            index,
+                            player
+                        };
                     }
+                    return null;
+                }).filter(item => item !== null);
+
+
+                if (playersCanPlay.length > 1) {
+                    setState(prev => ({ ...prev, isDrawCards: true }))
+                    const numPlayerCanPlay = playersCanPlay.length;
+                    const res = await drawACard(deckId, numPlayerCanPlay * 3);
+                    const { cards } = res.data;
+                    const updatedPlayers = [...playersReset];
+
+                    for (let i = 0; i < cards.length; i++) {
+                        const currentPlayerCanPlayIndex = i % numPlayerCanPlay;
+                        const currentPlayerInfo = playersCanPlay[currentPlayerCanPlayIndex];
+
+                        if (currentPlayerInfo && currentPlayerInfo.player.cards.length < 3) {
+                            updatedPlayers[currentPlayerInfo.index].cards.push(cards[i]);
+                            setState(prev => ({ ...prev, frontCard: false, players: updatedPlayers, remaining: prev.remaining - 1 }));
+                            // Đợi 200ms rồi mới phát bài tiếp
+                            await new Promise(resolve => setTimeout(resolve, 200));
+                        }
+                    }
+                    // Đợi 1s để giảm lag khi map hình ảnh Card
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    setState(prev => ({ ...prev, isDrawCards: false }))
                 }
             } else {
                 toast.warning('Not enough cards, proceed to shuffle')
@@ -131,6 +158,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
 
     const revealResult = () => {
+        if (!state.shuffled) {
+            return;
+        }
         if (state.frontCard) {
             return;
         }
@@ -161,13 +191,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setState(initialState);
         toast.success('Successfully reset the game')
     };
-
-    const resetCardsAndPointPlayer = (players: Player[]) => {
-        const updatedPlayers = players.map((player) => ({ ...player, cards: [], point: 0 }));
-        setState((prev) => ({ ...prev, frontCard: false, players: updatedPlayers }));
-        setTimeout(() => { }, 1000)
-
-    }
 
     const calculatePlayerPoint = (cards: Card[]) => {
         const cardValues = cards.map(card => {

@@ -35,6 +35,11 @@
                     width        : 78px;
                 }
 
+                .disabled {
+                    opacity       : 0.5;
+                    pointer-events: none;
+                }
+
                 .btn-row-1 {
                     display: flex;
 
@@ -72,6 +77,11 @@
                     .btn-reset {
                         background-color: brown;
                     }
+                }
+
+                .txt-isDrawing {
+                    text-align: center;
+                    color     : #fff;
                 }
             }
         }
