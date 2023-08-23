@@ -20,7 +20,6 @@ export type Player = {
     coins: number,
     point: number,
     cards: Card[],
-    lose: boolean
 }
 
 export interface GameContextInterface {
@@ -52,10 +51,10 @@ type stateType = GameContextValues & {
 
 const initialState: stateType = {
     players: [
-        { id: 0, name: 'User A', coins: 5000, point: 0, cards: [], lose: false },
-        { id: 1, name: 'User B', coins: 5000, point: 0, cards: [], lose: false },
-        { id: 2, name: 'User C', coins: 5000, point: 0, cards: [], lose: false },
-        { id: 3, name: 'User D', coins: 5000, point: 0, cards: [], lose: false },
+        { id: 0, name: 'User A', coins: 5000, point: 0, cards: [] },
+        { id: 1, name: 'User B', coins: 5000, point: 0, cards: [] },
+        { id: 2, name: 'User C', coins: 5000, point: 0, cards: [] },
+        { id: 3, name: 'User D', coins: 5000, point: 0, cards: [] },
     ],
     deckId: '',
     remaining: 0,
@@ -72,17 +71,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     const shuffleCards = async () => {
         try {
-            if (state.shuffled && checkAvailabelCardsAndPlayer(state.players, state.remaining)) {
-                toast.info('There are still enough cards to play the game')
-                return;
-            }
             if (hasOnePlayer()) {
                 toast.info('The game is finished, please click Reset button')
                 return;
             }
+            const playersResetCards: Player[] = state.players.map(player => {
+                return { ...player, cards: [], point: 0 }
+            })
+
             const res = await shuffleCard(1);
             setState((prevState) => ({
                 ...prevState,
+                players: playersResetCards,
                 success: res.data.success,
                 shuffled: res.data.shuffled,
                 deckId: res.data.deck_id,
@@ -104,18 +104,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
             const { players, deckId, remaining } = state;
 
             if (checkAvailabelCardsAndPlayer(players, remaining)) {
-                if (!state.frontCard && state.players[0].cards.length === 3) {
-                    toast.warning('Please click Reveal button')
-                    return;
-                }
-
                 const playersReset: Player[] = players.map(player => {
                     return { ...player, cards: [], point: 0 }
                 })
                 setState(prev => ({ ...prev, players: playersReset, frontCard: false }));
 
                 const playersCanPlay: ({ index: number, player: Player } | null)[] = playersReset.map((player, index) => {
-                    if (!player.lose) {
+                    if (player.coins >= LOSS_COINS) {
                         return {
                             index,
                             player
@@ -143,8 +138,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
                             await new Promise(resolve => setTimeout(resolve, 200));
                         }
                     }
-                    // Đợi 1s để giảm lag khi map hình ảnh Card
-                    await new Promise(resolve => setTimeout(resolve, 1000));
                     setState(prev => ({ ...prev, isDrawCards: false }))
                 }
             } else {
@@ -222,7 +215,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     const hasOnePlayer = (): boolean => {
         const playerCopy = [...state.players];
-        const result = playerCopy.filter(player => player.lose === false);
+        const result = playerCopy.filter(player => player.coins >= LOSS_COINS);
 
         if (result.length <= 1) {
             return true;

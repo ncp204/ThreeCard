@@ -10,17 +10,18 @@ interface PlayerProps {
 const backImage = '/assets/images/back.png';
 
 export default function Player({ index, player, frontCard }: PlayerProps) {
+    const notEnoughCoin = player.coins <= 900;
     return (
         <>
             <div className={`player player${index}`}>
                 <div className='container'>
                     {
-                        player.lose &&
+                        notEnoughCoin &&
                         <div>
                             <span className='txt-lose'>NOT ENOUGH COINS</span>
                         </div>
                     }
-                    <div className={`cards ${player.lose ? 'cards-lose' : ''}`}>
+                    <div className={`cards ${notEnoughCoin ? 'cards-lose' : ''}`}>
                         {
                             player.cards.map((card, index) => (
                                 <img key={index} className='card' src={frontCard === true ? card.image : backImage} alt={`Card ${index + 1}`} />
